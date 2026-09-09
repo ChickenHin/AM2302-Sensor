@@ -1,68 +1,68 @@
-name: Generate Doxygen Documentation
+# name: Generate Doxygen Documentation
 
-on:
-  push:
-    branches:
-      - master  # Passe den Branch an, für den die Dokumentation generiert werden soll
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - master  # Passe den Branch an, für den die Dokumentation generiert werden soll
+#   workflow_dispatch:
 
-jobs:
-  html-docs:
-    runs-on: ubuntu-latest
+# jobs:
+#   html-docs:
+#     runs-on: ubuntu-latest
 
-    steps:
-      # Checkout des Repositorys
-      - name: Checkout Repository
-        uses: actions/checkout@main
+#     steps:
+#       # Checkout des Repositorys
+#       - name: Checkout Repository
+#         uses: actions/checkout@main
 
-      # Installiere Doxygen + graphviz
-      - name: Install Doxygen
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y doxygen graphviz
+#       # Installiere Doxygen + graphviz
+#       - name: Install Doxygen
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y doxygen graphviz
 
-      # Generiere die Dokumentation
-      - name: Generate Documentation
-        run: doxygen Doxyfile
+#       # Generiere die Dokumentation
+#       - name: Generate Documentation
+#         run: doxygen Doxyfile
 
-      # Prüfen, ob der Ordner erstellt wurde
-      - name: Verify Documentation and copy pictures to html
-        run: |
-          ls -la docs/html
-          touch docs/html/.nojekyll
+#       # Prüfen, ob der Ordner erstellt wurde
+#       - name: Verify Documentation and copy pictures to html
+#         run: |
+#           ls -la docs/html
+#           touch docs/html/.nojekyll
 
-      # Dokumentation deployen (z.B. in den gh-pages Branch)
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/html
+#       # Dokumentation deployen (z.B. in den gh-pages Branch)
+#       - name: Deploy to GitHub Pages
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_dir: ./docs/html
 
-  pdf-docs:
-    runs-on: ubuntu-latest
-    needs: html-docs
-    steps:
-      - uses: actions/checkout@main
+#   pdf-docs:
+#     runs-on: ubuntu-latest
+#     needs: html-docs
+#     steps:
+#       - uses: actions/checkout@main
 
-      - name: Install Doxygen + LaTeX
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            doxygen graphviz make ghostscript \
-            texlive-latex-base texlive-latex-extra \
-            texlive-fonts-recommended texlive-lang-german
+#       - name: Install Doxygen + LaTeX
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y \
+#             doxygen graphviz make ghostscript \
+#             texlive-latex-base texlive-latex-extra \
+#             texlive-fonts-recommended texlive-lang-german
 
-      - name: Generate LaTeX
-        run: doxygen Doxyfile
+#       - name: Generate LaTeX
+#         run: doxygen Doxyfile
 
-      - name: Build PDF
-        run: |
-          cd docs/latex
-          make
+#       - name: Build PDF
+#         run: |
+#           cd docs/latex
+#           make
 
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: refman-pdf
-          path: docs/latex/refman.pdf
+#       - name: Upload PDF artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: refman-pdf
+#           path: docs/latex/refman.pdf
 
